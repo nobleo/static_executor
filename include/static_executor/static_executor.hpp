@@ -286,10 +286,6 @@ protected:
   execute_client(rclcpp::ClientBase::SharedPtr client);
 
   RCLCPP_PUBLIC
-  void
-  wait_for_work(std::chrono::nanoseconds timeout = std::chrono::nanoseconds(-1));
-
-  RCLCPP_PUBLIC
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
   get_node_by_group(rclcpp::callback_group::CallbackGroup::SharedPtr group);
 
