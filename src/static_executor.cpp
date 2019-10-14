@@ -319,6 +319,27 @@ StaticExecutor::execute_client(
   }
 }
 
+rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
+StaticExecutor::get_node_by_group(rclcpp::callback_group::CallbackGroup::SharedPtr group)
+{
+  if (!group) {
+    return nullptr;
+  }
+  for (auto & weak_node : weak_nodes_) {
+    auto node = weak_node.lock();
+    if (!node) {
+      continue;
+    }
+    for (auto & weak_group : node->get_callback_groups()) {
+      auto callback_group = weak_group.lock();
+      if (callback_group == group) {
+        return node;
+      }
+    }
+  }
+  return nullptr;
+}
+
 rclcpp::callback_group::CallbackGroup::SharedPtr
 StaticExecutor::get_group_by_timer(rclcpp::TimerBase::SharedPtr timer)
 {
