@@ -620,10 +620,11 @@ StaticExecutor::execute_wait_set(
     }
 
     for (size_t i = 0; i < wait_set_.size_of_guard_conditions; ++i) {
-      if (wait_set_.guard_conditions[i] || guard_conditions_.size() != old_number_of_guard_conditions_) {
+      if (wait_set_.guard_conditions[i]) {
         // rebuild the wait_set
         run_collect_entities();
         get_executable_list(exec_list);
+        break;
       }
     }
 
@@ -661,7 +662,6 @@ StaticExecutor::prepare_wait_set()
   if (rcl_wait_set_clear(&wait_set_) != RCL_RET_OK) {
     throw std::runtime_error("Couldn't clear wait set");
   }
-  old_number_of_guard_conditions_ = guard_conditions_.size();
   // The size of waitables are accounted for in size of the other entities
   rcl_ret_t ret = rcl_wait_set_resize(
     &wait_set_, memory_strategy_->number_of_ready_subscriptions(),
