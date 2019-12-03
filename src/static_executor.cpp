@@ -517,11 +517,10 @@ StaticExecutor::get_waitable_list(ExecutableList & exec_list)
 
 void
 StaticExecutor::get_executable_list(
-  ExecutableList & executable_list, std::chrono::nanoseconds timeout)
+  ExecutableList & executable_list)
 {
   // prepare the wait_set
   prepare_wait_set();
-  refresh_wait_set(timeout);
 
   get_timer_list(executable_list);
   get_subscription_list(executable_list);
@@ -576,8 +575,9 @@ StaticExecutor::execute_wait_set(
   }
   // Check the guard_conditions to see if anything is added to the executor
   for (size_t i = 0; i < wait_set_.size_of_guard_conditions; ++i) {
-    if (wait_set_.guard_conditions[i]) {
-      // rebuild the wait_set and ExecutableList struct
+    if (wait_set_.guard_conditions[i] &&
+        wait_set_.guard_conditions[i]!= context_->get_interrupt_guard_condition(&wait_set_) &&
+        wait_set_.guard_conditions[i]!= &interrupt_guard_condition_) {
       run_collect_entities();
       get_executable_list(exec_list);
       break;
