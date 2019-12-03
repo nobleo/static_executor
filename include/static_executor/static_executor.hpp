@@ -246,8 +246,7 @@ protected:
 
   RCLCPP_PUBLIC
   void
-  get_executable_list(executor::ExecutableList & executable_list,
-  std::chrono::nanoseconds timeout = std::chrono::nanoseconds(-1));
+  get_executable_list(executor::ExecutableList & executable_list);
 
   RCLCPP_PUBLIC
   void run_collect_entities();
