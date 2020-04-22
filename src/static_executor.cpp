@@ -527,6 +527,14 @@ StaticExecutor::get_executable_list(
   get_service_list(executable_list);
   get_client_list(executable_list);
   get_waitable_list(executable_list);
+
+
+  executable_list.node_notify_guard_conditions.clear();
+  for (auto & weak_node : weak_nodes_) {
+    if (auto node = weak_node.lock()) {
+      executable_list.node_notify_guard_conditions.push_back(node->get_notify_guard_condition());
+    }
+  }
 }
 
 // Function to run the callbacks from wait_set directly
@@ -574,15 +582,17 @@ StaticExecutor::execute_wait_set(
     }
   }
   // Check the guard_conditions to see if anything is added to the executor
+  // Check only for node guard conditions. Do not rebuild on Waitable guard conditions for instance
   for (size_t i = 0; i < wait_set_.size_of_guard_conditions; ++i) {
+    auto& guards = exec_list.node_notify_guard_conditions;
     if (wait_set_.guard_conditions[i] &&
-        wait_set_.guard_conditions[i]!= context_->get_interrupt_guard_condition(&wait_set_) &&
-        wait_set_.guard_conditions[i]!= &interrupt_guard_condition_) {
+        std::find(guards.begin(), guards.end(), wait_set_.guard_conditions[i]) != guards.end()) {
       run_collect_entities();
       get_executable_list(exec_list);
       break;
     }
   }
+
 }
 
 void

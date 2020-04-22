@@ -48,6 +48,8 @@ struct ExecutableList
   std::vector<rclcpp::Waitable::SharedPtr> waitable;
   // Contains the count of added waitables
   size_t number_of_waitables;
+
+  std::vector<rcl_guard_condition_t*> node_notify_guard_conditions;
 };
 
 }  // namespace executor
